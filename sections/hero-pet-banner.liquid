@@ -1,0 +1,221 @@
+{% liquid
+  assign background_styles = ''
+
+  if section.settings.background_color != blank
+    assign background_styles = background_styles | append: 'background-color:' | append: section.settings.background_color | append: ';'
+  endif
+
+  if section.settings.background_image != blank
+    assign bg_image_url = section.settings.background_image | image_url: width: 2400
+    assign background_styles = background_styles | append: 'background-image:url(' | append: bg_image_url | append: ');'
+  endif
+
+  assign overlay_opacity = section.settings.overlay_opacity | divided_by: 100.0
+%}
+
+<section
+  class="hero-pet-banner"
+  style="{{ background_styles }}--hero-overlay-color: {{ section.settings.overlay_color }}; --hero-overlay-opacity: {{ overlay_opacity }}; --hero-text-color: {{ section.settings.text_color }};"
+>
+  {%- if section.settings.overlay_color != blank and overlay_opacity > 0 -%}
+    <div class="hero-pet-banner__overlay" aria-hidden="true"></div>
+  {%- endif -%}
+
+  <div class="hero-pet-banner__content">
+    <div class="hero-pet-banner__text">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="hero-pet-banner__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+
+      <h1 class="hero-pet-banner__title">{{ section.settings.title | escape }}</h1>
+
+      {%- if section.settings.subtitle != blank -%}
+        <p class="hero-pet-banner__subtitle">{{ section.settings.subtitle | escape }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.cta_text != blank and section.settings.cta_link != blank -%}
+        <div class="hero-pet-banner__actions">
+          <a class="hero-pet-banner__cta" href="{{ section.settings.cta_link }}">{{ section.settings.cta_text | escape }}</a>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .hero-pet-banner {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--content-grid);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    color: var(--hero-text-color);
+    overflow: hidden;
+  }
+
+  .hero-pet-banner__overlay {
+    position: absolute;
+    inset: 0;
+    background-color: var(--hero-overlay-color);
+    opacity: var(--hero-overlay-opacity);
+    pointer-events: none;
+  }
+
+  .hero-pet-banner__content {
+    grid-column: 2;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 64px 24px;
+  }
+
+  .hero-pet-banner__text {
+    max-width: min(720px, 100%);
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .hero-pet-banner__eyebrow {
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    margin: 0;
+    color: color-mix(in srgb, var(--hero-text-color) 72%, transparent);
+  }
+
+  .hero-pet-banner__title {
+    font-size: clamp(2rem, 4vw + 1rem, 3rem);
+    line-height: 1.05;
+    margin: 0;
+  }
+
+  .hero-pet-banner__subtitle {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0;
+    color: color-mix(in srgb, var(--hero-text-color) 92%, transparent);
+    max-width: 56ch;
+  }
+
+  .hero-pet-banner__actions {
+    margin-top: 0.75rem;
+  }
+
+  .hero-pet-banner__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.9rem 1.6rem;
+    background-color: #ffb74d;
+    color: #1f1308;
+    border-radius: 999px;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    transition: transform 150ms ease, box-shadow 150ms ease;
+    min-width: 180px;
+    text-align: center;
+  }
+
+  .hero-pet-banner__cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.16);
+  }
+
+  .hero-pet-banner__cta:focus-visible {
+    outline: 2px solid #1f1308;
+    outline-offset: 3px;
+  }
+
+  @media (min-width: 960px) {
+    .hero-pet-banner__content {
+      padding: 120px 24px;
+    }
+
+    .hero-pet-banner__title {
+      font-size: clamp(2.5rem, 2vw + 2rem, 3.8rem);
+    }
+
+    .hero-pet-banner__subtitle {
+      font-size: 1.1rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Hero pet banner",
+  "tag": "section",
+  "class": "section hero-pet-banner-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Etiqueta superior",
+      "default": "New in the shop"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título",
+      "default": "Find the perfect treat for your pet"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtítulo",
+      "default": "Discover flavors and textures your pet will love, curated to match their personality."
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Texto del botón",
+      "default": "Shop now"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "Enlace del botón"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Color de texto",
+      "default": "#1f1308"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo",
+      "default": "#fff4e5"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Imagen de fondo"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Color de superposición",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 70,
+      "label": "Opacidad de superposición (%)"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero pet banner"
+    }
+  ]
+}
+{% endschema %}
